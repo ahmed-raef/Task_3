@@ -30,6 +30,25 @@ export default function AllPerks() {
 
 */
 
+  // useEffect Hook #1: Initial Data Loading
+  useEffect(() => {
+    // Load all perks on first render
+    loadAllPerks()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // useEffect Hook #2: Auto-search on Input Change (debounced)
+  useEffect(() => {
+    // Debounce to avoid firing requests on every keystroke instantly
+    const id = setTimeout(() => {
+      loadAllPerks()
+    }, 500) // 500ms debounce; tweak as needed
+
+    // Cleanup pending timeout if inputs change quickly or component unmounts
+    return () => clearTimeout(id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery, merchantFilter])
+
   
   useEffect(() => {
     // Extract all merchant names from perks array
@@ -48,6 +67,7 @@ export default function AllPerks() {
   }, [perks]) // Dependency: re-run when perks array changes
 
   
+
   async function loadAllPerks() {
     // Reset error state before new request
     setError('')
@@ -136,7 +156,8 @@ export default function AllPerks() {
                 type="text"
                 className="input"
                 placeholder="Enter perk name..."
-                
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
               <p className="text-xs text-zinc-500 mt-1">
                 Auto-searches as you type, or press Enter / click Search
@@ -151,7 +172,8 @@ export default function AllPerks() {
               </label>
               <select
                 className="input"
-                
+                value={merchantFilter}
+                onChange={(e) => setMerchantFilter(e.target.value)}
               >
                 <option value="">All Merchants</option>
                 
@@ -289,4 +311,3 @@ export default function AllPerks() {
     </div>
   )
 }
-
